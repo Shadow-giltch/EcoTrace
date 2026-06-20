@@ -1,0 +1,6 @@
+{
+  "name": "Carbon Footprint Tracker",
+  "description": "EcoTrace Carbon Footprint Awareness Platform to track, understand, and reduce personal carbon emissions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
