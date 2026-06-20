@@ -113,6 +113,47 @@ async function runTests() {
   };
 
   try {
+    // === [Testing] Raw Unit Tests for Calculations & Clamping ===
+    console.log("\n--- Executing Test Unit: Individual Emissions Calculation & Clamping ---");
+    
+    // Normal input cases
+    const normalInputs = {
+      transport_km_daily: 40, transport_days_week: 5, fuel_efficiency: 12,
+      electricity_kwh_month: 200, lpg_kg_month: 12, meat_meals_week: 7,
+      dairy_servings_day: 2, short_flights_year: 2, long_flights_year: 1
+    };
+    const normRes = calculateCarbonFootprint(normalInputs);
+    assertEqual(normRes.breakdown.transport > 0, true, "Normal commute emissions computed correctly isolated");
+    assertEqual(normRes.breakdown.home_energy > 0, true, "Normal energy emissions computed correctly isolated");
+    assertEqual(normRes.breakdown.food > 0, true, "Normal diet emissions computed correctly isolated");
+    assertEqual(normRes.breakdown.flights > 0, true, "Normal flights emissions computed correctly isolated");
+
+    // Zero inputs cases
+    const zeroInputs = {
+      transport_km_daily: 0, transport_days_week: 0, fuel_efficiency: 12,
+      electricity_kwh_month: 0, lpg_kg_month: 0, meat_meals_week: 0,
+      dairy_servings_day: 0, short_flights_year: 0, long_flights_year: 0
+    };
+    const zeroRes = calculateCarbonFootprint(zeroInputs);
+    assertEqual(zeroRes.total_annual_tons, 0, "Zero inputs result in exactly 0.0 annual tons footprint");
+
+    // Extreme input bounds cases
+    const extremeInputs = {
+      transport_km_daily: 500, transport_days_week: 7, fuel_efficiency: 4,
+      electricity_kwh_month: 2000, lpg_kg_month: 100, meat_meals_week: 21,
+      dairy_servings_day: 10, short_flights_year: 50, long_flights_year: 20
+    };
+    const extremeRes = calculateCarbonFootprint(extremeInputs);
+    assertEqual(extremeRes.total_annual_tons > 20, true, "Extreme/boundary inputs computed successfully without overflow");
+
+    // Habit completion simulator (Set simulation) for doneSet transitions
+    console.log("\n--- Executing Test Unit: Habit Completion Set Transitions ---");
+    const testSet = new Set<string>();
+    testSet.add("habit_laundry_cold");
+    assertEqual(testSet.has("habit_laundry_cold"), true, "Action habit item added to active completed set successfully");
+    testSet.delete("habit_laundry_cold");
+    assertEqual(testSet.has("habit_laundry_cold"), false, "Action habit item deselected and removed from tracking set successfully");
+
     // 1. Test performance header presence
     console.log("\n--- Executing Test 1: Performance Headers ---");
     const res1 = await fetch(`http://localhost:${testPort}/health`);

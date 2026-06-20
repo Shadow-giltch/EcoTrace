@@ -280,8 +280,43 @@ export default function OverviewTab({
                 </div>
               </div>
 
-              <div className="relative h-64 w-full" role="img" aria-label="Comparison chart of your annual footprint versus carbon benchmarks.">
+              <div className="relative h-64 w-full animate-fade-in" role="img" aria-label="Comparison chart of your annual footprint versus carbon benchmarks.">
                 <canvas ref={chartRef} className="w-full h-full"></canvas>
+                
+                {/* [Accessibility] Visually hidden table summary of chart data for screen readers */}
+                <div className="sr-only">
+                  <table summary="This table lists EcoTrace carbon emissions benchmarks compared to your current calculated annual carbon emission footprint in metric tons of carbon dioxide equivalent.">
+                    <thead>
+                      <tr>
+                        <th scope="col">Entity Baseline</th>
+                        <th scope="col">Carbon Emissions (Metric Tons CO2e / Year)</th>
+                        <th scope="col">Sustainable Performance Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row">Your Annual Footprint</th>
+                        <td>{totalAnnualTons.toFixed(2)} t CO2e</td>
+                        <td>{totalAnnualTons <= 2.0 ? "Eco-sustainable Hero" : "Exceeds sustainable threshold"}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">India Average Cap</th>
+                        <td>1.90 t CO2e</td>
+                        <td>Within sustainable limits</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">World average mean</th>
+                        <td>4.80 t CO2e</td>
+                        <td>Exceeds global safe threshold</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Paris Target Goal</th>
+                        <td>2.00 t CO2e</td>
+                        <td>Sustainable climate target threshold</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 

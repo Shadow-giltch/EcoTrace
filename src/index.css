@@ -44,3 +44,14 @@
   background: #94a3b8;
 }
 
+/* [Accessibility] Disable/shorten transitions and keyframe animations when users enable prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-delay: 0s !important;
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}
+

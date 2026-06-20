@@ -38,10 +38,39 @@ export default function CalculatorTab({
     return () => clearTimeout(handler);
   }, [localValues, localName]);
 
-  const handleSliderChange = (field: keyof CalculationInput, val: number) => {
+  /**
+   * Safe change handler for sliding options.
+   * Cleans numeric arguments to guard against negative or overflow injections.
+   * @param {keyof CalculationInput} field - target calculation input field key.
+   * @param {any} val - raw parameter input values.
+   */
+  const handleSliderChange = (field: keyof CalculationInput, val: any) => {
+    // [Security] Strict parseFloat parsing and NaN safe-guard validation
+    let parsed = parseFloat(val);
+    if (isNaN(parsed)) {
+      parsed = 0;
+    }
+    
+    // [Security] Establish standard boundary constraint limits matching sliders
+    const bounds: Partial<Record<keyof CalculationInput, number>> = {
+      transport_km_daily: 500,
+      transport_days_week: 7,
+      fuel_efficiency: 25,
+      electricity_kwh_month: 2000,
+      lpg_kg_month: 100,
+      meat_meals_week: 21,
+      dairy_servings_day: 10,
+      short_flights_year: 50,
+      long_flights_year: 20
+    };
+    
+    const maxLimit = bounds[field] ?? 10000;
+    const minLimit = field === "fuel_efficiency" ? 4 : 0; // Guard vehicle division by zero
+    const clamped = Math.max(minLimit, Math.min(maxLimit, parsed));
+
     setLocalValues(prev => ({
       ...prev,
-      [field]: val
+      [field]: clamped
     }));
   };
 

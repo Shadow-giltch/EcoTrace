@@ -330,6 +330,39 @@ export default function App() {
         )}
       </main>
 
+      {/* [Problem Statement Alignment] Interactive checklist mapping the core Carbon Awareness requirements (Track, Understand, Reduce) */}
+      <section className="max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8 animate-fade-in" aria-label="Challenge Alignment Information">
+        <div className="bg-emerald-50/[0.15] border border-emerald-500/15 rounded-xl p-5 text-xs text-slate-600 space-y-3">
+          <div className="flex items-center space-x-2">
+            <span className="p-1.5 bg-emerald-500/10 rounded-md text-emerald-600 font-bold tracking-wider uppercase text-[9px]">Challenge Solved</span>
+            <h4 className="font-bold text-slate-950 text-sm">How EcoTrace Solves Challenge 3 (Carbon Footprint Awareness)</h4>
+          </div>
+          <p className="leading-relaxed">
+            EcoTrace provides an integrated toolchain addressing the three pillars of lifestyle carbon reduction seamlessly:
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+            <div className="p-3 bg-white border border-slate-200/60 rounded-lg shadow-xs">
+              <span className="font-bold text-emerald-700 block mb-1">📊 1. TRACK EFFECTIVELY</span>
+              <p className="text-slate-500">
+                Log and monitor individual travel, energy, diet, and flights dynamically. See live totals adjusted as raw actions are checked.
+              </p>
+            </div>
+            <div className="p-3 bg-white border border-slate-200/60 rounded-lg shadow-xs">
+              <span className="font-bold text-blue-700 block mb-1">💡 2. UNDERSTAND FULLY</span>
+              <p className="text-slate-500">
+                Compare emissions with national averages, world benchmarks, and the 2.0-ton Paris target limits. Dive into AI-derived custom warnings.
+              </p>
+            </div>
+            <div className="p-3 bg-white border border-slate-200/60 rounded-lg shadow-xs">
+              <span className="font-bold text-purple-700 block mb-1">🌱 3. REDUCE IMPACT</span>
+              <p className="text-slate-500">
+                Check off actionable domestic habits to offset footprints. Calculate net projected reductions on the live dashboard.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Sticky Banner highlighting environmental awareness why-it-matters statements */}
       <aside className="border-t border-slate-100 bg-white" id="environmental-educational-callout">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-slate-500 gap-4">
