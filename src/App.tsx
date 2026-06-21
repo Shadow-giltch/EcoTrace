@@ -317,6 +317,8 @@ export default function App() {
             insights={insights}
             loading={loadingInsights}
             totalAnnualTons={finalCalculatedTons}
+            breakdown={calcResult.breakdown}
+            userName={userName}
           />
         )}
 

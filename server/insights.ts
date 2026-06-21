@@ -90,3 +90,43 @@ export function generateInsights(breakdown: CalculationBreakdown, total: number)
   // Return generated array (handle typescript safety explicitly)
   return insights;
 }
+
+/**
+ * Pure prompt builder function to combine selected categories, calculated total,
+ * and top-contributing categories into a tailored prompt for Gemini.
+ */
+export function buildAIPrompt(breakdown: CalculationBreakdown, total: number, userName: string): string {
+  const categories = Object.keys(breakdown) as Array<keyof CalculationBreakdown>;
+  let dominantCategory = categories[0] || "transport";
+  let maxVal = breakdown[dominantCategory] || 0;
+  for (const cat of categories) {
+    if ((breakdown[cat] || 0) > maxVal) {
+      maxVal = breakdown[cat] || 0;
+      dominantCategory = cat;
+    }
+  }
+  const prettyCat = dominantCategory.replace("_", " ");
+
+  return `You are an expert environmental consultant advising ${userName}.
+Here is their carbon footprint:
+- Total annual footprint: ${total.toFixed(2)} metric tons (t CO2e).
+- Sector Breakdown:
+  * Transportation: ${(breakdown.transport || 0).toFixed(2)} t CO2e
+  * Home Energy: ${(breakdown.home_energy || 0).toFixed(2)} t CO2e
+  * Diet: ${(breakdown.food || 0).toFixed(2)} t CO2e
+  * Flights: ${(breakdown.flights || 0).toFixed(2)} t CO2e
+- Dominant Highest Contributor: ${prettyCat.toUpperCase()}.
+
+Generate a high-relevance 30-day climate reduction checklist plan.
+Provide EXACTLY 5 actionable bullet points. Each bullet must be concise (at most 2 sentences), realistic, and begin with a specific day range or priority. Do not output markdown tables, HTML tags, or complex nested scripts. Output pure clean text bullets.`;
+}
+
+/**
+ * Pure calculation function for progress percentage in state layers.
+ * Clamps result between 0% and 100% boundary limits.
+ */
+export function computeProgressPercent(currentSavings: number, totalPotential: number): number {
+  if (totalPotential <= 0) return 0;
+  const raw = Math.round((currentSavings / totalPotential) * 100);
+  return Math.max(0, Math.min(100, raw));
+}

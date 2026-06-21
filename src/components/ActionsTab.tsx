@@ -151,7 +151,8 @@ export default function ActionsTab({ onActionsSaved }: ActionsTabProps) {
   const completedCount = actions.filter(act => act.completed).length;
   const totalPotentialSavings = actions.reduce((acc, act) => acc + act.impact_co2_kg, 0);
   const currentSavings = actions.reduce((acc, act) => acc + (act.completed ? act.impact_co2_kg : 0), 0);
-  const progressPercent = Math.round((currentSavings / totalPotentialSavings) * 100) || 0;
+  const rawProgress = totalPotentialSavings > 0 ? Math.round((currentSavings / totalPotentialSavings) * 100) : 0;
+  const progressPercent = Math.max(0, Math.min(100, rawProgress));
 
   return (
     <div className="space-y-8" id="actions-tab-content">

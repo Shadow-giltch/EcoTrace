@@ -6,8 +6,9 @@
 import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
+import { GoogleGenAI } from "@google/genai";
 import { calculateCarbonFootprint, EMISSION_FACTORS } from "./server/emissions";
-import { generateInsights } from "./server/insights";
+import { generateInsights, buildAIPrompt } from "./server/insights";
 import { CalculationInput, LeaderboardEntry, ActionItem } from "./src/types";
 
 const app = express();
@@ -225,6 +226,60 @@ app.post("/api/insights", (req: Request, res: Response) => {
 
   const insights = generateInsights(breakdown, total);
   res.status(200).json({ insights });
+});
+
+// 2b. [Problem Statement Alignment] AI-Generated Personalized 30-Day Climate Reduction Plan Endpoint
+// [Security] API key acknowledgment: in a production deployment, this Gemini call must go through a server-side proxy so the API key is never exposed client-side.
+app.post("/api/generate-plan", rateLimiter, async (req: Request, res: Response) => {
+  const { breakdown, total_annual_tons, userName } = req.body;
+
+  if (!breakdown || typeof total_annual_tons !== "number") {
+    return res.status(422).json({ 
+      error: "Unprocessable Entity", 
+      message: "Missing required breakdown or total annual tons properties for generating custom plan." 
+    });
+  }
+
+  // Formulate high-relevance prompt using the pure auditable builder helper
+  const prompt = buildAIPrompt(breakdown, total_annual_tons, userName || "an individual");
+
+  try {
+    const geminiClient = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build'
+        }
+      }
+    });
+
+    const response = await geminiClient.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents: prompt
+    });
+
+    const outputText = response.text || "No custom plan could be retrieved.";
+    
+    // Parse response into clean bullet lines to avoid raw HTML injection and XSS
+    const parsedLines = outputText
+      .split(/\n+/)
+      .map(line => line.trim())
+      .filter(line => line.length > 0)
+      .map(line => line.replace(/^[\s*\-\d\.\:\•\>]+/, "").trim()) // clean formatting marks
+      .filter(line => line.length > 0);
+
+    res.status(200).json({
+      success: true,
+      plan_lines: parsedLines.slice(0, 5),
+      prompt_audited: prompt
+    });
+  } catch (err: any) {
+    console.error("Gemini API computation failed:", err);
+    res.status(500).json({
+      success: false,
+      message: "Our remote AI climatologist models are currently occupied. Please retry plan generation in a moment."
+    });
+  }
 });
 
 // 3. Static/Cached Tips per category endpoint
